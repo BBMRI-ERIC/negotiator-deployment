@@ -46,9 +46,9 @@ services:
     container_name: negotiator-db
     image: postgres:14
     environment:
-      - POSTGRES_USER=negotiator
-      - POSTGRES_PASSWORD=negotiator
-      - POSTGRES_DB=negotiator
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - POSTGRES_DB=${POSTGRES_DB}
     volumes:
       - negotiator-db-data:/var/lib/postgresql/data
     command: -c 'shared_buffers=256MB' -c 'max_locks_per_transaction=1024'
