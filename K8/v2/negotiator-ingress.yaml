@@ -1,0 +1,20 @@
+apiVersion: extensions/v1beta1
+kind: Ingress
+metadata:
+  name: negotiator
+  annotations:                                                                  
+    kuberentes.io/ingress.class: "nginx"                                        
+    kubernetes.io/tls-acme: "true"                                              
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+spec:
+  tls:                                                                          
+    - hosts:                                                                    
+        - "negotiator.dyn.cloud.e-infra.cz"                                              
+      secretName: negotiator-dyn-cloud-e-infra-cz-tls
+  rules:
+  - host: negotiator.dyn.cloud.e-infra.cz
+    http:
+      paths:
+      - backend:
+          serviceName: negotiator
+          servicePort: 8080

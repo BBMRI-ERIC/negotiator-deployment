@@ -1,0 +1,46 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: negotiator-v3
+spec:
+  replicas: 1
+  minReadySeconds: 30
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      service: negotiator-v3-service
+  template:
+    metadata:
+      labels:
+        service: negotiator-v3-service
+    spec:  
+      containers:
+      - name: negotiator-v3
+        image: bbmrieric/negotiator:feature-GitHubActions
+        imagePullPolicy: Always
+        securityContext:
+          runAsUser: 1001
+        ports:
+        - containerPort: 8080
+        env: 
+        - name: SPRING_DATASOURCE_URL
+          value: "jdbc:postgresql://147.251.253.214:5432/negotiator"
+        - name: SPRING_DATASOURCE_USERNAME
+          value: "negotiator"
+        - name: SPRING_DATASOURCE_PASSWORD
+          value: negotiator
+        - name: SPRING_DATASOURCE_INITIALIZE
+          value: "true"
+        - name: SPRING_DATASOURCE_INITIALIZATION-MODE
+          value: "always"
+        - name: SPRING_JPA_HIBERNATE_DDL_AUTO
+          value: "update"
+        - name: OAUTH2_ISSUER
+          value: "TEST"
+        resources:
+          requests:
+            cpu: "125m"
+            memory: "512Mi"
+          limits:
+            cpu: "0.2"
+            memory: "1Gi"

@@ -1,0 +1,50 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: negotiator
+spec:
+  replicas: 1
+  minReadySeconds: 30
+  revisionHistoryLimit: 2
+  selector:
+    matchLabels:
+      service: negotiator
+  template:
+    metadata:
+      labels:
+        service: negotiator
+    spec:  
+      containers:
+      - name: negotiator
+        image: bbmricz/negotiator:latest
+        imagePullPolicy: Always
+        securityContext:
+          runAsUser: 1001
+        ports:
+        - containerPort: 8080
+        env: 
+        - name: POSTGRES_HOST
+          value: "negotiator-db"
+        - name: NEGOTIATOR_URL
+          value: "https://negotiator.dyn.cloud.e-infra.cz"
+        - name: AUTH_HOST
+          value: "https://login.bbmri-eric.eu"
+        - name: AUTH_PUBLIC_KEY
+          value: "MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAjKvsfThd4XO/J5PDlgnm
+                CZ3vGB8MRwcK4rJ42xO/xVmtwkxV8ZW4LIbRE+uQn4EsyTY8ke9do2sSUHGSIHh6
+                T0OR1nm9eljOEXwO6/kYPJbVvEYRIQaZ5kvuCZEP9dcyHwgaN9thHpo2n71GpVo+
+                kZ/KhUY8XHU7PIUokCPIQrF20CvANa2h8htJMp3mIIBJ2j1sf7qfLo2QAJO5p92z
+                ASwPpZSebOFhqU5005Qp7uNB+Rv+1rwL2mclEcXRjmNQmStThOetZLgReoszE3ob
+                HyW65UprY269ulKAyqPVm653jtp5aYAt/sP1twgW9UY2+lkOMMpLYwZkTcg3eAW0
+                vQIDAQAB"
+        - name: AUTH_CLIENT_ID
+          value: "9a363503-61dc-418b-9da7-8a11e11cccbd"
+        - name: AUTH_CLIENT_SECRET
+          value: "O_bG1DZEwhJwzo2YmSou9NTfFF0l-ZZskqwHdY3osz1oQtaJGwip7eS-jDAKu6NiE82JQiLYpMvAa-94riKwOg"
+        resources:
+          requests:
+            cpu: "125m"
+            memory: "512Mi"
+          limits:
+            cpu: "0.2"
+            memory: "1Gi"
