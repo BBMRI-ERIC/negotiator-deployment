@@ -1,8 +1,28 @@
 version: "3.4"
 services:
+  traefik:
+    image: "traefik:v2.9"
+    container_name: "traefik"
+    command:
+      - "--api.insecure=true"
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.web.address=:80"
+    labels:
+      - traefik.enable=false
+    ports:
+      - "80:80"
+      - "8080:8080"
+    volumes:
+      - "/var/run/docker.sock:/var/run/docker.sock:ro"
   negotiator:
     container_name: negotiator
     image: bbmrieric/negotiator
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.negotiator.rule=Host(`${HOST}`) && PathPrefix(`/api`)
+      - traefik.http.services.negotiator.loadbalancer.server.port=8080
+      - traefik.http.routers.negotiator.entrypoints=web
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/negotiator
       - SPRING_DATASOURCE_USERNAME=negotiator
@@ -12,16 +32,16 @@ services:
       - SPRING_DATASOURCE_INITIALIZATION-MODE=always
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - OAUTH2_ISSUER=
-    ports:
-      - "81:8080"
     depends_on:
       - postgres
   negotiator-frontend:
     container_name: negotiator-frontend
     image: bbmrieric/negotiator-frontend
-    ports:
-      - "80:8080"
-
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.negotiator-frontend.rule=Host(`${HOST}`)
+      - traefik.http.services.negotiator-frontend.loadbalancer.server.port=8080
+      - traefik.http.routers.negotiator-frontend.entrypoints=web
   postgres:
     container_name: negotiator-db
     image: postgres:14
@@ -29,8 +49,6 @@ services:
       - POSTGRES_USER=negotiator
       - POSTGRES_PASSWORD=negotiator
       - POSTGRES_DB=negotiator
-    ports:
-      - "5432:5432"
     volumes:
       - negotiator-db-data:/var/lib/postgresql/data
     command: -c 'shared_buffers=256MB' -c 'max_locks_per_transaction=1024'
