@@ -4,35 +4,31 @@ services:
     image: "traefik:v2.9"
     container_name: "traefik"
     command:
+      - "--api.insecure=true"
       - "--providers.docker=true"
       - "--providers.docker.exposedbydefault=false"
       - "--entrypoints.web.address=:80"
-      - --entryPoints.websecure.address=:443
-      - --providers.file.directory=/etc/traefik/config
     labels:
       - traefik.enable=false
     ports:
       - "80:80"
       - "8080:8080"
-      - "443:443"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - ${PATH_TO_TRAEFIC_DYNAMIC}:/etc/traefik/config/traefik.yaml 
-      - ${PATH_TO_CERTS}:/etc/certs
   negotiator:
     container_name: negotiator
     image: bbmrieric/negotiator
     labels:
       - traefik.enable=true
-      - "traefik.http.routers.negotiator.tls=true"
       - traefik.http.routers.negotiator.rule=Host(`${HOST}`) && PathPrefix(`/api`)
       - traefik.http.services.negotiator.loadbalancer.server.port=8080
-      - traefik.http.routers.negotiator.entrypoints=websecure
+      - traefik.http.routers.negotiator.entrypoints=web
     environment:
       - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/negotiator
       - SPRING_DATASOURCE_USERNAME=negotiator
       - SPRING_DATASOURCE_PASSWORD=negotiator
       - SPRING_DATASOURCE_INITIALIZE=true
+#      - SPRING_DATASOURCE_DATA=file:/data.sql
       - SPRING_DATASOURCE_INITIALIZATION-MODE=always
       - SPRING_JPA_HIBERNATE_DDL_AUTO=update
       - OAUTH2_ISSUER=
@@ -43,10 +39,9 @@ services:
     image: bbmrieric/negotiator-frontend
     labels:
       - traefik.enable=true
-      - "traefik.http.routers.negotiator-frontend.tls=true"
       - traefik.http.routers.negotiator-frontend.rule=Host(`${HOST}`)
       - traefik.http.services.negotiator-frontend.loadbalancer.server.port=8080
-      - traefik.http.routers.negotiator-frontend.entrypoints=websecure
+      - traefik.http.routers.negotiator-frontend.entrypoints=web
   postgres:
     container_name: negotiator-db
     image: postgres:14
