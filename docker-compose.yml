@@ -21,7 +21,7 @@ services:
       - ${PATH_TO_CERTS}:/etc/certs
   negotiator:
     container_name: negotiator
-    image: bbmrieric/negotiator
+    image: bbmrieric/negotiator:${BACKEND_TAG:-latest}
     labels:
       - traefik.enable=true
       - "traefik.http.routers.negotiator.tls=true"
@@ -40,7 +40,7 @@ services:
       - postgres
   negotiator-frontend:
     container_name: negotiator-frontend
-    image: bbmrieric/negotiator-frontend
+    image: bbmrieric/negotiator-frontend:${FRONTEND_TAG:-latest}
     labels:
       - traefik.enable=true
       - "traefik.http.routers.negotiator-frontend.tls=true"
