@@ -47,6 +47,11 @@ services:
       - traefik.http.routers.negotiator-frontend.rule=Host(`${HOST}`)
       - traefik.http.services.negotiator-frontend.loadbalancer.server.port=8080
       - traefik.http.routers.negotiator-frontend.entrypoints=websecure
+    environment:
+      - AUTH_URL=${AUTH_URL}
+      - CLIENT_ID=${CLIENT_ID}
+      - REDIRECT_URI=${REDIRECT_URI}
+      - LOGOUT_URI=${LOGOUT_URI}
   postgres:
     container_name: negotiator-db
     image: postgres:14
