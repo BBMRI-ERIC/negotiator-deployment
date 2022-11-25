@@ -20,6 +20,8 @@ services:
       - ${PATH_TO_TRAEFIC_DYNAMIC}:/etc/traefik/config/traefik.yaml 
       - ${PATH_TO_CERTS}:/etc/certs
   negotiator:
+    env_file: 
+      - env.backend
     container_name: negotiator
     image: bbmrieric/negotiator:${BACKEND_TAG:-latest}
     labels:
@@ -28,14 +30,6 @@ services:
       - traefik.http.routers.negotiator.rule=Host(`${HOST}`) && PathPrefix(`/api`)
       - traefik.http.services.negotiator.loadbalancer.server.port=8080
       - traefik.http.routers.negotiator.entrypoints=websecure
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/negotiator
-      - SPRING_DATASOURCE_USERNAME=negotiator
-      - SPRING_DATASOURCE_PASSWORD=negotiator
-      - SPRING_DATASOURCE_INITIALIZE=true
-      - SPRING_DATASOURCE_INITIALIZATION-MODE=always
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - OAUTH2_ISSUER=
     depends_on:
       - postgres
   negotiator-frontend:

@@ -16,6 +16,8 @@ services:
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
   negotiator:
+    env_file:
+      - env.backend
     container_name: negotiator
     image: bbmrieric/negotiator
     labels:
