@@ -33,7 +33,7 @@ services:
     - SPRING_DATASOURCE_USERNAME=negotiator
     - SPRING_DATASOURCE_PASSWORD=negotiator
     - SPRING_DATASOURCE_INITIALIZE=true
-    - SPRING_DATASOURCE_DATA=file:/data.sql
+#    - SPRING_DATASOURCE_DATA=file:/data.sql
     - SPRING_DATASOURCE_INITIALIZATIONMODE=always
     - SPRING_JPA_DEFERDATASOURCEINITIALIZATION=true
     - SPRING_JPA_HIBERNATE_DDL_AUTO=update
@@ -68,6 +68,8 @@ services:
       - POSTGRES_USER=${POSTGRES_USER}
       - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
       - POSTGRES_DB=${POSTGRES_DB}
+    ports:
+      - "127.0.0.1:5432:5432"
     volumes:
       - negotiator-db-data:/var/lib/postgresql/data
     command: -c 'shared_buffers=256MB' -c 'max_locks_per_transaction=1024'
