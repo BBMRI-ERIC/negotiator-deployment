@@ -17,11 +17,11 @@ services:
       - "443:443"
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
-      - ${PATH_TO_TRAEFIC_DYNAMIC}:/etc/traefik/config/traefik.yaml 
+      - ${PATH_TO_TRAEFIC_DYNAMIC}:/etc/traefik/config/traefik.yaml
       - ${PATH_TO_CERTS}:/etc/certs
   negotiator:
-    env_file: 
-      - env.backend
+    env_file:
+      - .env.backend
     container_name: negotiator
     image: bbmrieric/negotiator:${BACKEND_TAG:-latest}
     labels:

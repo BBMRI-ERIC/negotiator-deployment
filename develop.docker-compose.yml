@@ -17,7 +17,7 @@ services:
       - "/var/run/docker.sock:/var/run/docker.sock:ro"
   negotiator:
     env_file:
-      - env.backend
+      - .env.backend
     container_name: negotiator
     image: bbmrieric/negotiator
     labels:
@@ -25,15 +25,6 @@ services:
       - traefik.http.routers.negotiator.rule=Host(`${HOST}`) && PathPrefix(`/api`)
       - traefik.http.services.negotiator.loadbalancer.server.port=8080
       - traefik.http.routers.negotiator.entrypoints=web
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/negotiator
-      - SPRING_DATASOURCE_USERNAME=negotiator
-      - SPRING_DATASOURCE_PASSWORD=negotiator
-      - SPRING_DATASOURCE_INITIALIZE=true
-#      - SPRING_DATASOURCE_DATA=file:/data.sql
-      - SPRING_DATASOURCE_INITIALIZATION-MODE=always
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-      - OAUTH2_ISSUER=
     depends_on:
       - postgres
   negotiator-frontend:
