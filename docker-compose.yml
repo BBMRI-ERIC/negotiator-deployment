@@ -24,27 +24,12 @@ services:
     image: bbmrieric/negotiator:${BACKEND_TAG:-latest}
     labels:
       - traefik.enable=true
-      - "traefik.http.routers.negotiator.tls=true"
+      - traefik.http.routers.negotiator.tls=true
       - traefik.http.routers.negotiator.rule=Host(`${HOST}`) && PathPrefix(`/api`)
       - traefik.http.services.negotiator.loadbalancer.server.port=8080
       - traefik.http.routers.negotiator.entrypoints=websecure
-    environment:
-    - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/negotiator
-    - SPRING_DATASOURCE_USERNAME=negotiator
-    - SPRING_DATASOURCE_PASSWORD=negotiator
-    - SPRING_DATASOURCE_INITIALIZE=true
-#    - SPRING_DATASOURCE_DATA=file:/data.sql
-    - SPRING_DATASOURCE_INITIALIZATIONMODE=always
-    - SPRING_JPA_DEFERDATASOURCEINITIALIZATION=true
-    - SPRING_JPA_HIBERNATE_DDL_AUTO=update
-    - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_USERINFOURI=https://login.bbmri-eric.eu/oidc/userinfo
-    - SPRING_SECURITY_OAUTH2_RESOURCESERVER_JWT_ISSUERURI=https://login.bbmri-eric.eu/oidc/
-    - NEGOTIATOR_FRONTENDURL=https://negotiator-v3.bbmri-eric.eu
-    - NEGOTIATOR_AUTHORIZATION_CLAIM=eduperson_entitlement
-    - NEGOTIATOR_AUTHORIZATION_ADMINCLAIMVALUE=urn:geant:bbmri-eric.eu:group:bbmri:negotiator_v3:admins#perun.bbmri-eric.eu
-    - NEGOTIATOR_AUTHORIZATION_RESEARCHERCLAIMVALUE=urn:geant:bbmri-eric.eu:group:bbmri:negotiator_v3:researchers#perun.bbmri-eric.eu
-    - NEGOTIATOR_AUTHORIZATION_BIOBANKERCLAIMVALUE=urn:geant:bbmri-eric.eu:group:bbmri:negotiator_v3:biobankers#perun.bbmri-eric.eu
-    - NEGOTIATOR_AUTHORIZATION_SUBJECTCLAIM=preferred_username
+    env_file:
+      - ".env.backend"
     depends_on:
       - postgres
   negotiator-frontend:
@@ -52,22 +37,17 @@ services:
     image: bbmrieric/negotiator-frontend:${FRONTEND_TAG:-latest}
     labels:
       - traefik.enable=true
-      - "traefik.http.routers.negotiator-frontend.tls=true"
+      - traefik.http.routers.negotiator-frontend.tls=true
       - traefik.http.routers.negotiator-frontend.rule=Host(`${HOST}`)
       - traefik.http.services.negotiator-frontend.loadbalancer.server.port=8080
       - traefik.http.routers.negotiator-frontend.entrypoints=websecure
-    environment:
-      - AUTH_URL=${AUTH_URL}
-      - CLIENT_ID=${CLIENT_ID}
-      - REDIRECT_URI=${REDIRECT_URI}
-      - LOGOUT_URI=${LOGOUT_URI}
+    env_file:
+      - ".env.frontend"
   postgres:
     container_name: negotiator-db
     image: postgres:14
-    environment:
-      - POSTGRES_USER=${POSTGRES_USER}
-      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
-      - POSTGRES_DB=${POSTGRES_DB}
+    env_file:
+      - ".env.database"
     ports:
       - "127.0.0.1:5432:5432"
     volumes:
