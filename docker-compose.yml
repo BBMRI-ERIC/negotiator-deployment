@@ -48,6 +48,8 @@ services:
     image: postgres:14
     env_file:
       - ".env.database"
+    ports:
+      - "127.0.0.1:5432:5432"
     volumes:
       - negotiator-db-data:/var/lib/postgresql/data
     command: -c 'shared_buffers=256MB' -c 'max_locks_per_transaction=1024'
